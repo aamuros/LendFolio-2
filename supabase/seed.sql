@@ -1,0 +1,3 @@
+-- LendFolio seed data
+-- This file will contain initial data for development.
+-- Implemented in future sprints.

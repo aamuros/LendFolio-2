@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { requireUser } from "@/lib/auth/require-user"
 import {
@@ -9,6 +9,7 @@ import {
   parseTermValue,
   type LoanApplicationInput,
 } from "@/lib/validation/loan-application"
+import type { BorrowerProfileData } from "@/lib/borrower/profile"
 
 export type LoanApplicationData = {
   id: string
@@ -90,7 +91,7 @@ export async function createLoanApplication(
     .from("borrower_profiles")
     .select("*")
     .eq("user_id", user.id)
-    .single()
+    .maybeSingle()
 
   if (profileError || !profile) {
     return {
@@ -106,26 +107,31 @@ export async function createLoanApplication(
     }
   }
 
+  const borrowerProfile = profile as BorrowerProfileData
   const profileSnapshot: Record<string, unknown> = {
-    business_name: profile.business_name,
-    business_type: profile.business_type,
-    business_description: profile.business_description,
-    business_address: profile.business_address,
-    city: profile.city,
-    province: profile.province,
-    years_operating: profile.years_operating,
-    monthly_revenue: profile.monthly_revenue,
-    monthly_expenses: profile.monthly_expenses,
-    existing_debt: profile.existing_debt,
-    requested_loan_purpose: profile.requested_loan_purpose,
-    profile_status: profile.profile_status,
+    id: borrowerProfile.id,
+    user_id: borrowerProfile.user_id,
+    business_name: borrowerProfile.business_name,
+    business_type: borrowerProfile.business_type,
+    business_description: borrowerProfile.business_description,
+    business_address: borrowerProfile.business_address,
+    city: borrowerProfile.city,
+    province: borrowerProfile.province,
+    years_operating: borrowerProfile.years_operating,
+    monthly_revenue: borrowerProfile.monthly_revenue,
+    monthly_expenses: borrowerProfile.monthly_expenses,
+    existing_debt: borrowerProfile.existing_debt,
+    requested_loan_purpose: borrowerProfile.requested_loan_purpose,
+    profile_status: borrowerProfile.profile_status,
+    created_at: borrowerProfile.created_at,
+    updated_at: borrowerProfile.updated_at,
   }
 
   const { data: application, error: insertError } = await supabase
     .from("loan_applications")
     .insert({
       borrower_id: user.id,
-      borrower_profile_id: profile.id,
+      borrower_profile_id: borrowerProfile.id,
       requested_amount: amount,
       loan_purpose: data.loan_purpose,
       preferred_term_months: term,
@@ -143,5 +149,6 @@ export async function createLoanApplication(
 
   revalidatePath("/borrower/applications")
   revalidatePath("/borrower")
+  revalidateTag("loan-applications", "max")
   return { success: true, id: application.id }
 }

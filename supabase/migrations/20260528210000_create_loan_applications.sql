@@ -16,26 +16,49 @@ create table public.loan_applications (
   updated_at timestamptz not null default now()
 );
 
+alter table public.loan_applications
+  add constraint loan_applications_requested_amount_positive
+    check (requested_amount > 0),
+  add constraint loan_applications_preferred_term_allowed
+    check (preferred_term_months in (1, 3, 6, 12));
+
 alter table public.loan_applications enable row level security;
 
 create policy "Borrowers can read own loan applications"
   on public.loan_applications
   for select
   to authenticated
-  using (borrower_id = auth.uid());
+  using (
+    borrower_id = auth.uid()
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+  );
 
 create policy "Borrowers can insert own loan applications"
   on public.loan_applications
   for insert
   to authenticated
-  with check (borrower_id = auth.uid());
-
-create policy "Borrowers can update own draft loan applications"
-  on public.loan_applications
-  for update
-  to authenticated
-  using (borrower_id = auth.uid() and status = 'draft')
-  with check (borrower_id = auth.uid());
+  with check (
+    borrower_id = auth.uid()
+    and status = 'submitted'
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+    and exists (
+      select 1
+      from public.borrower_profiles
+      where borrower_profiles.id = borrower_profile_id
+        and borrower_profiles.user_id = auth.uid()
+        and borrower_profiles.profile_status = 'complete'
+    )
+  );
 
 create trigger loan_applications_updated_at
   before update on public.loan_applications

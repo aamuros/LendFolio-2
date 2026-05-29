@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,11 @@ import { ApplicationsTable } from "@/components/borrower/applications-table"
 import { FileTextIcon, PlusIcon } from "lucide-react"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+
+export const metadata: Metadata = {
+  title: "Loan Applications | LendFolio",
+  description: "Track and manage your loan applications.",
+}
 
 export default async function BorrowerApplicationsPage() {
   const user = await requireUser()

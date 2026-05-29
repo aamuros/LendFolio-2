@@ -1,8 +1,17 @@
 import { z } from "zod"
 
+export const validTermValues = [1, 3, 6, 12] as const
+export const validTermStrings = validTermValues.map(String) as [
+  "1",
+  "3",
+  "6",
+  "12",
+]
+
 export const loanApplicationSchema = z.object({
   requested_amount: z
     .string()
+    .trim()
     .min(1, "Requested amount is required")
     .refine(
       (val) => {
@@ -13,14 +22,21 @@ export const loanApplicationSchema = z.object({
     ),
   loan_purpose: z
     .string()
+    .trim()
     .min(1, "Loan purpose is required")
     .min(10, "Please provide a more detailed loan purpose"),
-  preferred_term_months: z.string().min(1, "Preferred term is required"),
+  preferred_term_months: z
+    .string()
+    .min(1, "Preferred term is required")
+    .refine((val) => validTermStrings.includes(val as (typeof validTermStrings)[number]), {
+      message: "Please select a valid loan term",
+    }),
   repayment_plan: z
     .string()
+    .trim()
     .min(1, "Repayment plan is required")
     .min(10, "Please provide a more detailed repayment plan"),
-  borrower_notes: z.string().optional(),
+  borrower_notes: z.string().trim().optional(),
 })
 
 export type LoanApplicationInput = z.infer<typeof loanApplicationSchema>
@@ -28,11 +44,9 @@ export type LoanApplicationInput = z.infer<typeof loanApplicationSchema>
 export const preferredTerms = [
   { value: "1", label: "1 month" },
   { value: "3", label: "3 months" },
-  { value: "6", term: "6 months", label: "6 months" },
+  { value: "6", label: "6 months" },
   { value: "12", label: "12 months" },
 ] as const
-
-export const validTermValues = [1, 3, 6, 12] as const
 
 export function parseTermValue(value: string): number | null {
   const num = Number(value)

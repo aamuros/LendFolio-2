@@ -75,6 +75,14 @@ describe("loanApplicationSchema", () => {
     expect(result.success).toBe(false)
   })
 
+  it("rejects unsupported preferred_term_months", () => {
+    const result = loanApplicationSchema.safeParse({
+      ...validInput,
+      preferred_term_months: "24",
+    })
+    expect(result.success).toBe(false)
+  })
+
   it("rejects empty repayment_plan", () => {
     const result = loanApplicationSchema.safeParse({
       ...validInput,

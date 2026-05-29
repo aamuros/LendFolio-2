@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,11 @@ import { ApplicationForm } from "@/components/borrower/application-form"
 import { AlertTriangleIcon, ArrowRightIcon } from "lucide-react"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+
+export const metadata: Metadata = {
+  title: "New Loan Application | LendFolio",
+  description: "Submit a new loan application to get offers from verified lenders.",
+}
 
 export default async function NewApplicationPage() {
   const user = await requireUser()

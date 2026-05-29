@@ -1,4 +1,3 @@
-import Link from "next/link"
 import {
   Table,
   TableBody,
@@ -7,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { ApplicationStatusBadge } from "./application-status-badge"
 import type { LoanApplicationData } from "@/lib/borrower/applications"
 
@@ -47,7 +45,6 @@ export function ApplicationsTable({ applications }: ApplicationsTableProps) {
           <TableHead>Term</TableHead>
           <TableHead>Purpose</TableHead>
           <TableHead>Status</TableHead>
-          <TableHead className="text-right">Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -63,11 +60,6 @@ export function ApplicationsTable({ applications }: ApplicationsTableProps) {
             </TableCell>
             <TableCell>
               <ApplicationStatusBadge status={app.status} />
-            </TableCell>
-            <TableCell className="text-right">
-              <Button variant="ghost" size="sm" render={<Link href={`/borrower/applications/${app.id}`} />}>
-                View
-              </Button>
             </TableCell>
           </TableRow>
         ))}

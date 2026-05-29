@@ -1,5 +1,7 @@
+import { Suspense } from "react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { CurrentYear } from "@/components/shared/current-year"
 import { DashboardNav } from "./dashboard-nav"
 import { UserMenu } from "./user-menu"
 import { Button } from "@/components/ui/button"
@@ -39,10 +41,10 @@ export function DashboardShell({
               <UserMenu user={user} />
             ) : (
               <>
-                <Button variant="ghost" size="sm" render={<Link href="/login" />}>
+                <Button nativeButton={false} variant="ghost" size="sm" render={<Link href="/login" />}>
                   Log in
                 </Button>
-                <Button size="sm" render={<Link href="/signup" />}>
+                <Button nativeButton={false} size="sm" render={<Link href="/signup" />}>
                   Sign up
                 </Button>
               </>
@@ -55,7 +57,7 @@ export function DashboardShell({
       </main>
       <footer className="border-t py-4">
         <div className="container flex flex-col items-center justify-between gap-2 px-4 text-sm text-muted-foreground sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} LendFolio</p>
+          <p>&copy; <Suspense fallback={null}><CurrentYear /></Suspense> LendFolio</p>
           <div className="flex gap-4">
             <Link href="/terms" className="hover:text-foreground">
               Terms

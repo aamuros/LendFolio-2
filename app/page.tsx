@@ -150,7 +150,7 @@ export default function HomePage() {
 
       <footer className="border-t border-zinc-200">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-4 sm:px-6 py-4 text-[13px] text-zinc-400 sm:flex-row">
-          <p>&copy; {new Date().getFullYear()} LendFolio</p>
+          <p>&copy; 2026 LendFolio</p>
           <div className="flex gap-4">
             <Link href="/terms" className="hover:text-zinc-950">
               Terms

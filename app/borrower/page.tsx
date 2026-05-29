@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,11 @@ import {
   WalletIcon,
   ArrowRightIcon,
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "Dashboard | LendFolio",
+  description: "Manage your business profile, loan applications, and repayment tracking.",
+}
 
 export default async function BorrowerPage() {
   const user = await requireUser()
@@ -47,7 +53,7 @@ export default async function BorrowerPage() {
                   Set up your business profile to start applying for loans from verified lenders.
                 </p>
               </div>
-              <Button size="sm" render={<Link href="/borrower/profile" />}>
+              <Button nativeButton={false} size="sm" render={<Link href="/borrower/profile" />}>
                 Get started
                 <ArrowRightIcon />
               </Button>
@@ -67,7 +73,7 @@ export default async function BorrowerPage() {
             }
             icon={Building2Icon}
             action={
-              <Button size="sm" render={<Link href="/borrower/profile" />}>
+              <Button nativeButton={false} size="sm" render={<Link href="/borrower/profile" />}>
                 {isProfileComplete ? "View profile" : "Create profile"}
               </Button>
             }
@@ -81,7 +87,7 @@ export default async function BorrowerPage() {
             icon={FileTextIcon}
             action={
               isProfileComplete ? (
-                <Button size="sm" render={<Link href="/borrower/applications/new" />}>
+                <Button nativeButton={false} size="sm" render={<Link href="/borrower/applications/new" />}>
                   New application
                 </Button>
               ) : (

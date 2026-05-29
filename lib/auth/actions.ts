@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { env } from "@/lib/supabase/env"
 import type { UserRole } from "@/lib/roles/types"
@@ -40,6 +41,8 @@ export async function signIn(
     .select("role")
     .eq("id", data.user.id)
     .single()
+
+  revalidatePath("/", "layout")
 
   return { success: true, role: (profile?.role as UserRole) ?? "borrower" }
 }
@@ -86,5 +89,6 @@ export async function signOut(): Promise<AuthResult> {
     return { success: false, error: error.message }
   }
 
+  revalidatePath("/", "layout")
   return { success: true }
 }

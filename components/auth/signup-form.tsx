@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { RadioGroup } from "@/components/ui/radio-group"
 import {
   Form,
   FormControl,
@@ -80,6 +81,7 @@ export function SignupForm() {
             Click the link in the email to verify your account and get started.
           </p>
           <Button
+            nativeButton={false}
             variant="outline"
             className="w-full"
             render={<Link href="/login" />}
@@ -113,18 +115,14 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>I want to join as a</FormLabel>
                   <FormControl>
-                    <div className="grid grid-cols-2 gap-3">
-                      <RoleOptionCard
-                        role="borrower"
-                        selected={field.value === "borrower"}
-                        onSelect={() => field.onChange("borrower")}
-                      />
-                      <RoleOptionCard
-                        role="lender"
-                        selected={field.value === "lender"}
-                        onSelect={() => field.onChange("lender")}
-                      />
-                    </div>
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="grid grid-cols-2 gap-3"
+                    >
+                      <RoleOptionCard role="borrower" />
+                      <RoleOptionCard role="lender" />
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

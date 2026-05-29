@@ -1,6 +1,6 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { requireUser } from "@/lib/auth/require-user"
 import {
@@ -12,6 +12,7 @@ import {
 
 export type BorrowerProfileData = {
   id: string
+  user_id: string
   business_name: string
   business_type: string
   business_description: string
@@ -46,7 +47,7 @@ export async function getBorrowerProfile(): Promise<BorrowerProfileData | null> 
     .from("borrower_profiles")
     .select("*")
     .eq("user_id", user.id)
-    .single()
+    .maybeSingle()
 
   if (error || !data) {
     return null
@@ -61,7 +62,7 @@ export async function saveBorrowerProfile(
   const user = await requireUser()
 
   if (user.role !== "borrower") {
-    return { success: false, error: "Only borrowers can create a business profile." }
+    return { success: false, error: "You do not have access to this profile." }
   }
 
   const parsed = borrowerProfileSchema.safeParse(input)
@@ -94,6 +95,7 @@ export async function saveBorrowerProfile(
   })
 
   const profileData = {
+    user_id: user.id,
     business_name: data.business_name,
     business_type: data.business_type,
     business_description: data.business_description,
@@ -110,32 +112,16 @@ export async function saveBorrowerProfile(
 
   const supabase = await createClient()
 
-  const { data: existing } = await supabase
+  const { error } = await supabase
     .from("borrower_profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .single()
+    .upsert(profileData, { onConflict: "user_id" })
 
-  if (existing) {
-    const { error } = await supabase
-      .from("borrower_profiles")
-      .update(profileData)
-      .eq("id", existing.id)
-
-    if (error) {
-      return { success: false, error: "Failed to update your profile. Please try again." }
-    }
-  } else {
-    const { error } = await supabase
-      .from("borrower_profiles")
-      .insert({ ...profileData, user_id: user.id })
-
-    if (error) {
-      return { success: false, error: "Failed to create your profile. Please try again." }
-    }
+  if (error) {
+    return { success: false, error: "Failed to save your profile. Please try again." }
   }
 
   revalidatePath("/borrower/profile")
   revalidatePath("/borrower")
+  revalidateTag("borrower-profile", "max")
   return { success: true }
 }

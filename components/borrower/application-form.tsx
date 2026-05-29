@@ -210,6 +210,7 @@ export function ApplicationForm() {
           </p>
           <div className="flex items-center gap-2">
             <Button
+              nativeButton={false}
               type="button"
               variant="outline"
               render={<Link href="/borrower/applications" />}

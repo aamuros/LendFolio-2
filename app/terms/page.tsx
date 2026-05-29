@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { DashboardShell, PageHeader, SectionCard } from "@/components/layout"
+
+export const metadata: Metadata = {
+  title: "Terms of Service | LendFolio",
+  description: "LendFolio terms of service - rules and guidelines for using the platform.",
+}
 
 export default function TermsPage() {
   return (

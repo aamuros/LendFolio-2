@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2Icon } from "lucide-react"
@@ -30,9 +29,37 @@ import { loginSchema, type LoginInput } from "@/lib/validation/auth"
 import { signIn } from "@/lib/auth/actions"
 import { roleRoutes, type UserRole } from "@/lib/roles/types"
 
+function getPostLoginDestination(role: UserRole) {
+  const fallback = roleRoutes[role]
+
+  if (typeof window === "undefined") {
+    return fallback
+  }
+
+  const redirectTo = new URLSearchParams(window.location.search).get("redirect")
+
+  if (!redirectTo) {
+    return fallback
+  }
+
+  try {
+    const url = new URL(redirectTo, window.location.origin)
+    const isSameOrigin = url.origin === window.location.origin
+    const isRoleRoute =
+      url.pathname === fallback || url.pathname.startsWith(`${fallback}/`)
+
+    if (isSameOrigin && isRoleRoute) {
+      return `${url.pathname}${url.search}${url.hash}`
+    }
+  } catch {
+    return fallback
+  }
+
+  return fallback
+}
+
 export function LoginForm() {
   const [serverError, setServerError] = useState<string | null>(null)
-  const router = useRouter()
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -58,7 +85,7 @@ export function LoginForm() {
       description: "You have been logged in successfully.",
     })
 
-    router.push(roleRoutes[role])
+    window.location.replace(getPostLoginDestination(role))
   }
 
   return (
@@ -100,7 +127,15 @@ export function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Password</FormLabel>
+                    <Link
+                      href="/forgot-password"
+                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Forgot your password?
+                    </Link>
+                  </div>
                   <FormControl>
                     <Input
                       type="password"

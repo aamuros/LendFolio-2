@@ -54,7 +54,7 @@ async function ApplicationFormLoader() {
               You need to create a business profile before you can apply for a loan.
             </AlertDescription>
           </Alert>
-          <Button render={<Link href="/borrower/profile" />}>
+          <Button nativeButton={false} render={<Link href="/borrower/profile" />}>
             Create business profile
             <ArrowRightIcon />
           </Button>
@@ -73,7 +73,7 @@ async function ApplicationFormLoader() {
               Your business profile is incomplete. Please complete all required fields before submitting a loan application.
             </AlertDescription>
           </Alert>
-          <Button render={<Link href="/borrower/profile" />}>
+          <Button nativeButton={false} render={<Link href="/borrower/profile" />}>
             Complete business profile
             <ArrowRightIcon />
           </Button>

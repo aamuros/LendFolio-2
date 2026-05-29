@@ -5,7 +5,7 @@ import { createServerClient } from "@supabase/ssr"
 const protectedRoutes = ["/borrower", "/lender", "/manager"]
 const publicAuthRoutes = ["/login", "/signup"]
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isProtectedRoute = protectedRoutes.some((route) =>
@@ -19,7 +19,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const response = NextResponse.next()
+  let supabaseResponse = NextResponse.next({
+    request,
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
@@ -30,8 +32,12 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            response.cookies.set(name, value)
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
+          })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
           )
         },
       },
@@ -56,13 +62,17 @@ export async function proxy(request: NextRequest) {
       .single()
 
     if (profile?.role) {
-      return NextResponse.redirect(
+      const redirectResponse = NextResponse.redirect(
         new URL(`/${profile.role}`, request.url)
       )
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie.name, cookie.value)
+      })
+      return redirectResponse
     }
   }
 
-  return response
+  return supabaseResponse
 }
 
 export const config = {

@@ -22,6 +22,7 @@ export function LogoutButton() {
       return
     }
 
+    router.refresh()
     router.push("/login")
   }
 

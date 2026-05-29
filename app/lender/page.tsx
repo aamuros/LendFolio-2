@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,6 +12,11 @@ import {
   WalletIcon,
   BarChart3Icon,
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "Lender Dashboard | LendFolio",
+  description: "Review borrower applications, send offers, and verify repayments.",
+}
 
 export default async function LenderPage() {
   const user = await requireUser()

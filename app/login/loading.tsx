@@ -1,18 +1,9 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import dynamic from "next/dynamic"
-import { buttonVariants } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
-export const metadata: Metadata = {
-  title: "Log in | LendFolio",
-  description: "Log in to your LendFolio account to manage your lending workflow.",
-}
-
-const LoginForm = dynamic(
-  () => import("@/components/auth/login-form").then((mod) => mod.LoginForm),
-  {
-    loading: () => (
+export default function LoginLoading() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center px-4">
+      <Skeleton className="mb-8 h-8 w-28" />
       <div className="w-full max-w-sm rounded-lg border p-6 space-y-6">
         <div className="space-y-2 text-center">
           <Skeleton className="mx-auto h-7 w-32" />
@@ -31,20 +22,6 @@ const LoginForm = dynamic(
         </div>
         <Skeleton className="mx-auto h-4 w-36" />
       </div>
-    ),
-  }
-)
-
-export default function LoginPage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-4">
-      <Link
-        href="/"
-        className={buttonVariants({ variant: "ghost", size: "sm", className: "mb-8" })}
-      >
-        ← Back to home
-      </Link>
-      <LoginForm />
     </div>
   )
 }

@@ -31,7 +31,7 @@ export default async function BorrowerApplicationsPage() {
         title="Loan Applications"
         description="Track and manage your loan applications."
       >
-        <Button render={<Link href="/borrower/applications/new" />}>
+        <Button nativeButton={false} render={<Link href="/borrower/applications/new" />}>
           <PlusIcon />
           New application
         </Button>
@@ -58,7 +58,7 @@ async function ApplicationsListLoader() {
         description="Submit your first loan application to get started. You'll need a complete business profile first."
         icon={FileTextIcon}
         action={
-          <Button render={<Link href="/borrower/applications/new" />}>
+          <Button nativeButton={false} render={<Link href="/borrower/applications/new" />}>
             <PlusIcon />
             New application
           </Button>

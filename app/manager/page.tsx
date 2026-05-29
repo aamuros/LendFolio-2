@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { DashboardShell } from "@/components/layout"
@@ -13,6 +14,11 @@ import {
   UserCheckIcon,
   AlertTriangleIcon,
 } from "lucide-react"
+
+export const metadata: Metadata = {
+  title: "Manager Dashboard | LendFolio",
+  description: "Platform oversight: lender approvals, borrower verification, and activity monitoring.",
+}
 
 export default async function ManagerPage() {
   const user = await requireUser()

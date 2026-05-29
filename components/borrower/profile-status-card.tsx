@@ -2,56 +2,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { StatusBadge } from "@/components/shared/status-badge"
 import { Progress } from "@/components/ui/progress"
 import type { BorrowerProfileData } from "@/lib/borrower/profile"
+import {
+  borrowerProfileFieldLabels,
+  getMissingBorrowerProfileFields,
+} from "@/lib/validation/borrower-profile"
 
 interface ProfileStatusCardProps {
   profile: BorrowerProfileData | null
 }
 
-const requiredFields = [
-  "business_name",
-  "business_type",
-  "business_description",
-  "business_address",
-  "city",
-  "province",
-  "years_operating",
-  "monthly_revenue",
-  "monthly_expenses",
-  "requested_loan_purpose",
-] as const
-
 function getCompletionPercentage(profile: BorrowerProfileData | null): number {
-  if (!profile) return 0
-
-  let filled = 0
-  for (const field of requiredFields) {
-    const value = profile[field]
-    if (value !== null && value !== undefined && value !== "") {
-      filled++
-    }
-  }
-
-  return Math.round((filled / requiredFields.length) * 100)
+  const missing = getMissingBorrowerProfileFields(profile)
+  const total = Object.keys(borrowerProfileFieldLabels).length
+  return Math.round(((total - missing.length) / total) * 100)
 }
 
 function getMissingFields(profile: BorrowerProfileData | null): string[] {
-  if (!profile) return requiredFields.map(formatFieldName)
-
-  const missing: string[] = []
-  for (const field of requiredFields) {
-    const value = profile[field]
-    if (value === null || value === undefined || value === "") {
-      missing.push(formatFieldName(field))
-    }
-  }
-  return missing
-}
-
-function formatFieldName(field: string): string {
-  return field
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
+  return getMissingBorrowerProfileFields(profile).map(
+    (field) => borrowerProfileFieldLabels[field]
+  )
 }
 
 export function ProfileStatusCard({ profile }: ProfileStatusCardProps) {

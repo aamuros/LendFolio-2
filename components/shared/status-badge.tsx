@@ -29,11 +29,13 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
-  const variant = statusMap[status.toLowerCase()] ?? "secondary"
+  const normalizedStatus = status.toLowerCase().replaceAll(" ", "_")
+  const variant = statusMap[normalizedStatus] ?? "secondary"
+  const label = status.replaceAll("_", " ")
 
   return (
     <Badge variant={variant} className={cn("capitalize", className)}>
-      {status}
+      {label}
     </Badge>
   )
 }

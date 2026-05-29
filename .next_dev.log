@@ -1,0 +1,19 @@
+
+> lendfolio@0.1.0 dev
+> next dev
+
+⚠ Port 3000 is in use by process 72001, using available port 3001 instead.
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.254.101:3001
+- Environments: .env
+✓ Ready in 674ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          72001
+- Dir:          /Users/aamuros/Documents/RealWorld-Projects/LendFolio
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 72001 to stop it.
+[?25h

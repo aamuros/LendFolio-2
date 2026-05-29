@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2Icon } from "lucide-react"
@@ -58,6 +59,7 @@ const defaultValues: BorrowerProfileInput = {
 
 export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
   const [serverError, setServerError] = useState<string | null>(null)
+  const router = useRouter()
 
   const form = useForm<BorrowerProfileInput>({
     resolver: zodResolver(borrowerProfileSchema),
@@ -74,19 +76,19 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
         city: profile.city ?? "",
         province: profile.province ?? "",
         years_operating:
-          profile.years_operating !== null
+          profile.years_operating != null
             ? String(profile.years_operating)
             : "",
         monthly_revenue:
-          profile.monthly_revenue !== null
+          profile.monthly_revenue != null
             ? String(profile.monthly_revenue)
             : "",
         monthly_expenses:
-          profile.monthly_expenses !== null
+          profile.monthly_expenses != null
             ? String(profile.monthly_expenses)
             : "",
         existing_debt:
-          profile.existing_debt !== null
+          profile.existing_debt != null
             ? String(profile.existing_debt)
             : "",
         requested_loan_purpose: profile.requested_loan_purpose ?? "",
@@ -107,6 +109,7 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
     toast.success("Profile saved", {
       description: "Your business profile has been updated successfully.",
     })
+    router.refresh()
   }
 
   return (
@@ -297,6 +300,7 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
                     <Input
                       type="number"
                       inputMode="numeric"
+                      min="0"
                       placeholder="e.g. 3"
                       {...field}
                     />
@@ -316,6 +320,7 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
                     <Input
                       type="number"
                       inputMode="numeric"
+                      min="0"
                       placeholder="e.g. 50000"
                       {...field}
                     />
@@ -337,6 +342,7 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
                     <Input
                       type="number"
                       inputMode="numeric"
+                      min="0"
                       placeholder="e.g. 100000"
                       {...field}
                     />
@@ -356,6 +362,7 @@ export function BorrowerProfileForm({ profile }: BorrowerProfileFormProps) {
                     <Input
                       type="number"
                       inputMode="numeric"
+                      min="0"
                       placeholder="e.g. 75000"
                       {...field}
                     />

@@ -1,14 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { Radio } from "@base-ui/react/radio"
 import { LandmarkIcon, HandCoinsIcon, CheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type RoleOptionCardProps = {
   role: "borrower" | "lender"
-  selected: boolean
-  onSelect: () => void
-}
+} & Omit<Radio.Root.Props, "value">
 
 const roleConfig = {
   borrower: {
@@ -23,32 +22,36 @@ const roleConfig = {
   },
 } as const
 
-export function RoleOptionCard({ role, selected, onSelect }: RoleOptionCardProps) {
+export function RoleOptionCard({ role, className, ...props }: RoleOptionCardProps) {
   const config = roleConfig[role]
   const Icon = config.icon
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
+    <Radio.Root
+      value={role}
       className={cn(
-        "relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all hover:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        selected
-          ? "border-primary bg-primary/5 ring-1 ring-primary"
-          : "border-border bg-card"
+        "group relative flex flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all",
+        "hover:border-primary/50",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "border-border bg-card",
+        "data-[checked]:border-primary data-[checked]:bg-muted/50 data-[checked]:ring-1 data-[checked]:ring-primary",
+        className
       )}
+      {...props}
     >
-      {selected && (
-        <span className="absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-          <CheckIcon className="size-3" />
-        </span>
-      )}
+      <Radio.Indicator
+        className={cn(
+          "absolute top-3 right-3 flex size-5 items-center justify-center rounded-full bg-primary text-primary-foreground",
+          "data-[unchecked]:hidden"
+        )}
+      >
+        <CheckIcon className="size-3" />
+      </Radio.Indicator>
       <span
         className={cn(
           "flex size-10 items-center justify-center rounded-lg",
-          selected
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-muted-foreground"
+          "bg-muted text-muted-foreground",
+          "group-data-[checked]:bg-primary group-data-[checked]:text-primary-foreground"
         )}
       >
         <Icon className="size-5" />
@@ -57,6 +60,6 @@ export function RoleOptionCard({ role, selected, onSelect }: RoleOptionCardProps
         <p className="text-sm font-medium leading-none">{config.title}</p>
         <p className="text-sm text-muted-foreground">{config.description}</p>
       </div>
-    </button>
+    </Radio.Root>
   )
 }

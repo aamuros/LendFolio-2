@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import { DashboardShell, PageHeader, SectionCard } from "@/components/layout"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | LendFolio",
+  description: "LendFolio privacy policy - how we collect, use, and protect your data.",
+}
 
 export default function PrivacyPage() {
   return (

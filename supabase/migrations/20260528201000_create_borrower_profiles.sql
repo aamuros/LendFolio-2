@@ -19,26 +19,68 @@ create table public.borrower_profiles (
   updated_at timestamptz not null default now()
 );
 
+alter table public.borrower_profiles
+  add constraint borrower_profiles_years_operating_nonnegative
+    check (years_operating is null or years_operating >= 0),
+  add constraint borrower_profiles_monthly_revenue_nonnegative
+    check (monthly_revenue is null or monthly_revenue >= 0),
+  add constraint borrower_profiles_monthly_expenses_nonnegative
+    check (monthly_expenses is null or monthly_expenses >= 0),
+  add constraint borrower_profiles_existing_debt_nonnegative
+    check (existing_debt is null or existing_debt >= 0);
+
 alter table public.borrower_profiles enable row level security;
 
 create policy "Borrowers can read own borrower profile"
   on public.borrower_profiles
   for select
   to authenticated
-  using (user_id = auth.uid());
+  using (
+    user_id = auth.uid()
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+  );
 
 create policy "Borrowers can insert own borrower profile"
   on public.borrower_profiles
   for insert
   to authenticated
-  with check (user_id = auth.uid());
+  with check (
+    user_id = auth.uid()
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+  );
 
 create policy "Borrowers can update own borrower profile"
   on public.borrower_profiles
   for update
   to authenticated
-  using (user_id = auth.uid())
-  with check (user_id = auth.uid());
+  using (
+    user_id = auth.uid()
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+  )
+  with check (
+    user_id = auth.uid()
+    and exists (
+      select 1
+      from public.profiles
+      where profiles.id = auth.uid()
+        and profiles.role = 'borrower'
+    )
+  );
 
 create trigger borrower_profiles_updated_at
   before update on public.borrower_profiles
@@ -55,17 +97,18 @@ declare
   _role text;
   _email text;
 begin
-  _role := coalesce(new.raw_user_meta_data ->> 'role', '');
+  _role := case
+    when coalesce(new.raw_user_meta_data ->> 'role', '') in ('borrower', 'lender', 'manager')
+      then new.raw_user_meta_data ->> 'role'
+    else 'borrower'
+  end;
   _email := coalesce(new.email, '');
 
   insert into public.profiles (id, email, role)
   values (
     new.id,
     _email,
-    case
-      when _role in ('borrower', 'lender', 'manager') then _role::public.user_role
-      else 'borrower'::public.user_role
-    end
+    _role::public.user_role
   );
 
   if _role = 'lender' then
